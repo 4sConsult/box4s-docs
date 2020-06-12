@@ -65,11 +65,4 @@
     </provider>
   </vulnerability-detector>
 
-  <wodle name="open-scap">
-    <timeout>1800</timeout>
-    <interval>1d</interval>
-    <scan-on-start>yes</scan-on-start>
-    <content type="xccdf" path="/var/ossec/wodles/oscap/content"/>
-  </wodle>
-
 </agent_config>
