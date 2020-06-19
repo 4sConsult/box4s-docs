@@ -141,7 +141,8 @@ Eine detaillierte Anleitung ist in der [Wazuh Dokumentation](https://documentati
 
 Die Zugehörigkeit von Clients zu Gruppen ist per *Endgeräte->Management->Groups->GRUPPENNAME->Add or remove Agents* zu erreichen.
 
-Eine Beispielkonfiguration für Windows und Linux kann ebenfalls in der Dokumentation gefunden werden.
+Eine Beispielkonfiguration für Windows und Linux kann ebenfalls [in der Dokumentation](#beispielkonfiguration) gefunden werden.
+
 ---
 
 ## Logsammlung
@@ -418,3 +419,78 @@ Regeln sind in Wazuh das Zentrale Werkzeug zur Bewertung eines Ereignisses. Rege
 Regeln sind in den meisten Fällen dadurch definiert, dass ein spezifizierter Wert in einer Datei gefunden wird. Damit spezielle Dateitypen wie JSON, welcher oftmals für Logdateien verwendet wird, auch sinnvoll interpretiert werden können gibt es [Decoder](https://documentation.wazuh.com/3.9/user-manual/ruleset/ruleset-xml-syntax/decoders.html). Alternativ zu diesen Decodern kann man auch mit RegEx Ausdrücken Dateien untersuchen.
 
 Das Erstellen von Regeln sowie das Anpassen von bereits vorhandenen Regeln ist [in dieser Dokumentation](https://documentation.wazuh.com/3.12/user-manual/ruleset/custom.html) genau beschrieben.
+
+
+## Beispielkonfiguration
+
+
+```
+<agent_config os="windows">
+
+  <localfile>
+    <location>System</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+  <localfile>
+    <location>Security</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+  <localfile>
+    <location>Microsoft-Windows-Windows Defender/Operational</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+
+  <vulnerability-detector>
+    <enabled>yes</enabled>
+    <interval>5m</interval>
+    <ignore_time>6h</ignore_time>
+    <run_on_start>yes</run_on_start>
+
+    <provider name="nvd">
+      <enabled>yes</enabled>
+      <update_from_year>2010</update_from_year>
+      <update_interval>1h</update_interval>
+    </provider>
+  </vulnerability-detector>
+
+</agent_config>
+
+<agent_config os="Linux">
+  <syscheck>
+    <directories>/usr/bin,/usr/sbin</directories>
+    <directories check_all="yes" realtime="yes" report_changes="yes">/etc/passwd /etc/sudoers /etc/hostname /etc/ssh/sshd_config</directories>
+  </syscheck>
+  <vulnerability-detector>
+    <enabled>yes</enabled>
+    <interval>5m</interval>
+    <ignore_time>6h</ignore_time>
+    <run_on_start>yes</run_on_start>
+    <provider name="canonical">
+      <enabled>yes</enabled>
+      <os>trusty</os>
+      <os>xenial</os>
+      <os>bionic</os>
+      <update_interval>1h</update_interval>
+    </provider>
+    <provider name="debian">
+      <enabled>yes</enabled>
+      <os>wheezy</os>
+      <os>stretch</os>
+      <os>jessie</os>
+      <os>buster</os>
+      <update_interval>1h</update_interval>
+    </provider>
+    <provider name="redhat">
+      <enabled>yes</enabled>
+      <update_from_year>2010</update_from_year>
+      <update_interval>1h</update_interval>
+    </provider>
+    <provider name="nvd">
+      <enabled>yes</enabled>
+      <update_from_year>2010</update_from_year>
+      <update_interval>1h</update_interval>
+    </provider>
+  </vulnerability-detector>
+
+</agent_config>
+```
